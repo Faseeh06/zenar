@@ -10,6 +10,164 @@ const LOGO_DARK_URL = 'https://i.postimg.cc/PrKpts18/image.png'
 const MENU_DARK_URL = 'https://i.postimg.cc/Bn2SCt0F/image.png'
 const MENU_LIGHT_URL = 'https://i.postimg.cc/3xbwRzYS/image.png'
 
+// Page Components
+const Dashboard = ({ guests, onUpdate, onDelete, onEdit }) => {
+  const totalGuests = guests.length;
+  const confirmedGuests = guests.filter(guest => guest.confirmed).length;
+  const pendingGuests = totalGuests - confirmedGuests;
+  const confirmationRate = totalGuests > 0 ? Math.round((confirmedGuests / totalGuests) * 100) : 0;
+  
+  return (
+    <>
+      {/* Stats Summary */}
+      <section className="stats-summary">
+        <div className="stat-card total">
+          <div className="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <div className="stat-content">
+            <h3 className="stat-label">Total Guests</h3>
+            <p className="stat-value">{totalGuests}</p>
+          </div>
+        </div>
+        <div className="stat-card confirmed">
+          <div className="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+          </div>
+          <div className="stat-content">
+            <h3 className="stat-label">Confirmed</h3>
+            <p className="stat-value">{confirmedGuests}</p>
+          </div>
+        </div>
+        <div className="stat-card pending">
+          <div className="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div className="stat-content">
+            <h3 className="stat-label">Pending</h3>
+            <p className="stat-value">{pendingGuests}</p>
+          </div>
+        </div>
+        <div className="stat-card rate">
+          <div className="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </div>
+          <div className="stat-content">
+            <h3 className="stat-label">Confirmation Rate</h3>
+            <p className="stat-value">{confirmationRate}%</p>
+            <div className="progress-bar">
+              <div className="progress" style={{ width: `${confirmationRate}%` }}></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Guest List */}
+      <section className="guest-list-section">
+        <h2 className="section-title">Guest List</h2>
+        <div className="guest-table">
+          {guests.length === 0 ? (
+            <p className="empty-message">No guests have been added yet.</p>
+          ) : (
+            guests.map(guest => (
+              <div key={guest.id} className="guest-row">
+                <div className="guest-avatar">
+                  {guest.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="guest-details">
+                  <h3 className="guest-name">{guest.name}</h3>
+                  <p className="guest-email">{guest.email}</p>
+                </div>
+                <div className="guest-actions">
+                  {!guest.confirmed ? (
+                    <button 
+                      className="confirm-btn" 
+                      onClick={() => onUpdate({...guest, confirmed: true})}
+                    >
+                      Confirm
+                    </button>
+                  ) : (
+                    <button 
+                      className="confirmed-indicator" 
+                      onClick={() => onUpdate({...guest, confirmed: false})}
+                    >
+                      Unconfirm
+                    </button>
+                  )}
+                  <button className="edit-btn" onClick={() => onEdit(guest)}>
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </span>
+                  </button>
+                  <button className="delete-btn" onClick={() => onDelete(guest.id)}>
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+    </>
+  );
+};
+
+const UnderConstructionPage = ({ pageName }) => {
+  return (
+    <div className="under-construction-page">
+      <div className="construction-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+          <path d="M17 18h1"></path>
+          <path d="M12 18h1"></path>
+          <path d="M7 18h1"></path>
+        </svg>
+      </div>
+      <h2 className="construction-title">Page Under Construction</h2>
+      <p className="construction-message">We're working hard to build the <span className="highlight">{pageName}</span> page. Check back soon!</p>
+    </div>
+  );
+};
+
+const LogoutPage = () => {
+  return (
+    <div className="logout-page">
+      <div className="logout-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+      </div>
+      <h2 className="logout-title">Thanks for visiting!</h2>
+      <p className="logout-message">Bhai hamein to receive krte jao :)</p>
+    </div>
+  );
+};
+
 function App() {
   const [guests, setGuests] = useState([]);
   const [activePage, setActivePage] = useState('dashboard');
@@ -20,6 +178,14 @@ function App() {
   const [editError, setEditError] = useState('');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [isLogoutView, setIsLogoutView] = useState(false);
+
+  // Toast display function
+  const showToast = (message) => {
+    setToast({ show: true, message });
+    setTimeout(() => setToast({ show: false, message: '' }), 3000);
+  };
 
   // Set up dark mode effect
   useEffect(() => {
@@ -46,6 +212,18 @@ function App() {
     setIsDarkMode(!isDarkMode);
   };
 
+  // Handle navbar item click
+  const handleNavClick = (page) => {
+    setIsLogoutView(false);
+    setActivePage(page);
+  };
+
+  // Handle logout click
+  const handleLogout = () => {
+    setIsLogoutView(true);
+    setActivePage('');
+  };
+  
   // Add a new guest
   const addGuest = (newGuest) => {
     const guestWithId = {
@@ -132,10 +310,59 @@ function App() {
       )
     : guests;
 
-  const totalGuests = guests.length;
-  const confirmedGuests = guests.filter(guest => guest.confirmed).length;
-  const pendingGuests = totalGuests - confirmedGuests;
-  const confirmationRate = totalGuests > 0 ? Math.round((confirmedGuests / totalGuests) * 100) : 0;
+  // Get title based on active page
+  const getPageTitle = () => {
+    if (isLogoutView) return "Logout";
+    
+    switch(activePage) {
+      case 'dashboard': return "Dashboard";
+      case 'guests': return "Guests";
+      case 'events': return "Events";
+      case 'settings': return "Settings";
+      default: return "Dashboard";
+    }
+  };
+
+  // Get subtitle based on active page
+  const getPageSubtitle = () => {
+    if (isLogoutView) return "Thanks for using our app";
+    
+    switch(activePage) {
+      case 'dashboard': return "Guest management overview";
+      case 'guests': return "Manage your guest list";
+      case 'events': return "Organize your events";
+      case 'settings': return "Configure your preferences";
+      default: return "Guest management overview";
+    }
+  };
+
+  // Render correct page content
+  const renderPageContent = () => {
+    if (isLogoutView) {
+      return <LogoutPage />;
+    }
+
+    switch(activePage) {
+      case 'dashboard':
+        return <Dashboard 
+          guests={filteredGuests} 
+          onUpdate={updateGuest} 
+          onDelete={deleteGuest} 
+          onEdit={startEditing} 
+        />;
+      case 'guests':
+      case 'events':
+      case 'settings':
+        return <UnderConstructionPage pageName={getPageTitle()} />;
+      default:
+        return <Dashboard 
+          guests={filteredGuests} 
+          onUpdate={updateGuest} 
+          onDelete={deleteGuest} 
+          onEdit={startEditing} 
+        />;
+    }
+  };
 
   return (
     <div className={`app ${isSidebarCollapsed ? 'collapsed' : ''} ${isDarkMode ? 'dark-mode' : ''}`}>
@@ -158,7 +385,7 @@ function App() {
         </div>
         <nav className="sidebar-nav">
           <ul className="nav-list">
-            <li className={`nav-item ${activePage === 'dashboard' ? 'active' : ''}`} onClick={() => setActivePage('dashboard')}>
+            <li className={`nav-item ${activePage === 'dashboard' && !isLogoutView ? 'active' : ''}`} onClick={() => handleNavClick('dashboard')}>
               <span className="nav-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="7" height="7"></rect>
@@ -169,7 +396,7 @@ function App() {
               </span>
               <span className="nav-label">Dashboard</span>
             </li>
-            <li className={`nav-item ${activePage === 'guests' ? 'active' : ''}`} onClick={() => setActivePage('guests')}>
+            <li className={`nav-item ${activePage === 'guests' ? 'active' : ''}`} onClick={() => handleNavClick('guests')}>
               <span className="nav-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -178,7 +405,7 @@ function App() {
               </span>
               <span className="nav-label">Guests</span>
             </li>
-            <li className={`nav-item ${activePage === 'events' ? 'active' : ''}`} onClick={() => setActivePage('events')}>
+            <li className={`nav-item ${activePage === 'events' ? 'active' : ''}`} onClick={() => handleNavClick('events')}>
               <span className="nav-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -189,7 +416,7 @@ function App() {
               </span>
               <span className="nav-label">Events</span>
             </li>
-            <li className={`nav-item ${activePage === 'settings' ? 'active' : ''}`} onClick={() => setActivePage('settings')}>
+            <li className={`nav-item ${activePage === 'settings' ? 'active' : ''}`} onClick={() => handleNavClick('settings')}>
               <span className="nav-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="3"></circle>
@@ -201,7 +428,7 @@ function App() {
           </ul>
         </nav>
         <div className="sidebar-footer">
-          <button className="logout-button">
+          <button className={`logout-button ${isLogoutView ? 'active' : ''}`} onClick={handleLogout}>
             <span className="nav-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -214,148 +441,47 @@ function App() {
         </div>
       </aside>
 
+      {/* Toast notification */}
+      {toast.show && (
+        <div className="toast-notification">
+          {toast.message}
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="main-content">
         <div className="content-container">
           <header className="content-header">
             <div className="header-content">
-              <h2 className="page-title">Dashboard</h2>
-              <p className="page-subtitle">Guest management overview</p>
+              <h2 className="page-title">{getPageTitle()}</h2>
+              <p className="page-subtitle">{getPageSubtitle()}</p>
             </div>
-            <div className="header-actions">
-              <div className="search-container">
-                <input 
-                  type="text" 
-                  className="search-input" 
-                  placeholder="Search guests..." 
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <span className="search-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </span>
+            {!isLogoutView && activePage === 'dashboard' && (
+              <div className="header-actions">
+                <div className="search-container">
+                  <input 
+                    type="text" 
+                    className="search-input" 
+                    placeholder="Search guests..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <span className="search-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </span>
+                </div>
+                <button className="add-guest-btn" onClick={() => document.getElementById('add-guest-modal').showModal()}>
+                  <span className="add-icon">+</span> Add Guest
+                </button>
               </div>
-              <button className="add-guest-btn" onClick={() => document.getElementById('add-guest-modal').showModal()}>
-                <span className="add-icon">+</span> Add Guest
-              </button>
-            </div>
+            )}
           </header>
 
-          {/* Stats Summary */}
-          <section className="stats-summary">
-            <div className="stat-card total">
-              <div className="stat-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <h3 className="stat-label">Total Guests</h3>
-                <p className="stat-value">{totalGuests}</p>
-              </div>
-            </div>
-            <div className="stat-card confirmed">
-              <div className="stat-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <h3 className="stat-label">Confirmed</h3>
-                <p className="stat-value">{confirmedGuests}</p>
-              </div>
-            </div>
-            <div className="stat-card pending">
-              <div className="stat-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <h3 className="stat-label">Pending</h3>
-                <p className="stat-value">{pendingGuests}</p>
-              </div>
-            </div>
-            <div className="stat-card rate">
-              <div className="stat-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                </svg>
-              </div>
-              <div className="stat-content">
-                <h3 className="stat-label">Confirmation Rate</h3>
-                <p className="stat-value">{confirmationRate}%</p>
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: `${confirmationRate}%` }}></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Guest List */}
-          <section className="guest-list-section">
-            <h2 className="section-title">Guest List</h2>
-            <div className="guest-table">
-              {filteredGuests.length === 0 ? (
-                <p className="empty-message">No guests have been added yet.</p>
-              ) : (
-                filteredGuests.map(guest => (
-                  <div key={guest.id} className="guest-row">
-                    <div className="guest-avatar">
-                      {guest.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="guest-details">
-                      <h3 className="guest-name">{guest.name}</h3>
-                      <p className="guest-email">{guest.email}</p>
-                    </div>
-                    <div className="guest-actions">
-                      {!guest.confirmed ? (
-                        <button 
-                          className="confirm-btn" 
-                          onClick={() => updateGuest({...guest, confirmed: true})}
-                        >
-                          Confirm
-                        </button>
-                      ) : (
-                        <button 
-                          className="confirmed-indicator" 
-                          onClick={() => updateGuest({...guest, confirmed: false})}
-                        >
-                          Confirm
-                        </button>
-                      )}
-                      <button className="edit-btn" onClick={() => startEditing(guest)}>
-                        <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                          </svg>
-                        </span>
-                      </button>
-                      <button className="delete-btn" onClick={() => deleteGuest(guest.id)}>
-                        <span>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            <line x1="10" y1="11" x2="10" y2="17"></line>
-                            <line x1="14" y1="11" x2="14" y2="17"></line>
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </section>
+          {/* Page Content */}
+          {renderPageContent()}
         </div>
       </main>
 
